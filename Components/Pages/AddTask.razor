@@ -1,0 +1,109 @@
+@page "/add-task"
+@using ToDoList.Models
+@using ToDoList.Services
+@inject TaskService TaskService
+@inject NavigationManager Navigation
+
+<div class="add-task-container">
+    <div class="form-header">
+        <h1>➕ Add New Task</h1>
+    </div>
+
+    <div class="form-card">
+        <EditForm Model="@newTask" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+
+            <div class="form-group">
+                <label for="taskName">
+                    <span class="icon">📝</span> Task Name
+                </label>
+                <InputText id="taskName" 
+                          class="form-control" 
+                          @bind-Value="newTask.TaskName" 
+                          placeholder="Enter task name" />
+            </div>
+
+            <div class="form-group">
+                <label for="expectedDelivery">
+                    <span class="icon">📅</span> Expected Delivery Date
+                </label>
+                <InputDate id="expectedDelivery" 
+                          class="form-control" 
+                          @bind-Value="newTask.ExpectedDelivery" 
+                          min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+            </div>
+
+            <div class="form-group">
+                <label for="comment">
+                    <span class="icon">💬</span> Comment
+                </label>
+                <InputTextArea id="comment" 
+                          class="form-control textarea-comment" 
+                          @bind-Value="newTask.Comment" 
+                          placeholder="Enter task comments or notes"
+                          rows="4" />
+            </div>
+
+            <div class="form-group">
+                <label for="category">
+                    <span class="icon">📁</span> Category
+                </label>
+                <InputSelect id="category" 
+                            class="form-control" 
+                            @bind-Value="newTask.Category">
+                    <option value="@TaskCategory.PD">PD</option>
+                    <option value="@TaskCategory.PS">PS</option>
+                    <option value="@TaskCategory.Personal">Personal</option>
+                </InputSelect>
+            </div>
+
+            <div class="form-group">
+                <label for="assignedBy">
+                    <span class="icon">👨‍💼</span> Assigned By
+                </label>
+                <InputText id="assignedBy" 
+                          class="form-control" 
+                          @bind-Value="newTask.AssignedBy" 
+                          placeholder="Enter who assigned this task" />
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <span class="icon">💾</span> Save Task
+                </button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancel">
+                    <span class="icon">❌</span> Cancel
+                </button>
+            </div>
+        </EditForm>
+    </div>
+
+    @if (showSuccess)
+    {
+        <div class="success-message">
+            ✅ Task added successfully!
+        </div>
+    }
+</div>
+
+@code {
+    private TodoTask newTask = new TodoTask
+    {
+        ExpectedDelivery = DateTime.Now.AddDays(1)
+    };
+    private bool showSuccess = false;
+
+    private async Task HandleSubmit()
+    {
+        TaskService.AddTask(newTask);
+        showSuccess = true;
+        
+        await Task.Delay(1500);
+        Navigation.NavigateTo("/");
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

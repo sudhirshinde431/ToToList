@@ -1,0 +1,33 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">✅ MyWork</a>
+        <label for="navbar-toggle" class="navbar-toggle-label">☰ Menu</label>
+    </div>
+</div>
+
+<input type="checkbox" id="navbar-toggle" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="nav flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="icon">📊</span> Dashboard
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="add-task">
+                <span class="icon">➕</span> Add Task
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="all-tasks">
+                <span class="icon">📋</span> All Tasks
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="tasks-table">
+                <span class="icon">📊</span> Table View
+            </NavLink>
+        </div>
+    </nav>
+</div>

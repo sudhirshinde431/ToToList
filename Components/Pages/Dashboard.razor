@@ -1,0 +1,318 @@
+@using ToDoList.Models
+@using ToDoList.Services
+@using Microsoft.AspNetCore.Components
+@inject TaskService TaskService
+@inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>📊 Dashboard</h1>
+        <div class="header-actions">
+            <button class="btn btn-success" @onclick="NavigateToAddTask">
+                <span class="icon">➕</span> Add Task
+            </button>
+            <button class="btn btn-primary" @onclick="RefreshDashboard">
+                <span class="icon">🔄</span> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card total">
+            <div class="stat-icon">📝</div>
+            <div class="stat-content">
+                <h3>@statistics["Total"]</h3>
+                <p>Total Tasks</p>
+            </div>
+        </div>
+        <div class="stat-card pending">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-content">
+                <h3>@statistics["Pending"]</h3>
+                <p>Pending Tasks</p>
+            </div>
+        </div>
+        <div class="stat-card completed">
+            <div class="stat-icon">✅</div>
+            <div class="stat-content">
+                <h3>@statistics["Completed"]</h3>
+                <p>Completed</p>
+            </div>
+        </div>
+        <div class="stat-card overdue">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-content">
+                <h3>@statistics["Overdue"]</h3>
+                <p>Overdue</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+        <div class="chart-card">
+            <h3>Task Status Overview</h3>
+            <div class="chart-container">
+                <div class="bar-chart">
+                    <div class="bar-item">
+                        <div class="bar-label">Pending</div>
+                        <div class="bar-wrapper">
+                            <div class="bar bar-pending" style="width: @GetPercentage(statistics["Pending"])%"></div>
+                            <span class="bar-value">@statistics["Pending"]</span>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">Completed</div>
+                        <div class="bar-wrapper">
+                            <div class="bar bar-completed" style="width: @GetPercentage(statistics["Completed"])%"></div>
+                            <span class="bar-value">@statistics["Completed"]</span>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">Overdue</div>
+                        <div class="bar-wrapper">
+                            <div class="bar bar-overdue" style="width: @GetPercentage(statistics["Overdue"])%"></div>
+                            <span class="bar-value">@statistics["Overdue"]</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <h3>Category Distribution</h3>
+            <div class="chart-container">
+                <div class="pie-chart">
+                    <div class="pie-item">
+                        <div class="pie-color" style="background-color: #667eea;"></div>
+                        <span>PD: @statistics["PD Tasks"]</span>
+                    </div>
+                    <div class="pie-item">
+                        <div class="pie-color" style="background-color: #764ba2;"></div>
+                        <span>PS: @statistics["PS Tasks"]</span>
+                    </div>
+                    <div class="pie-item">
+                        <div class="pie-color" style="background-color: #3b82f6;"></div>
+                        <span>Personal: @statistics["Personal Tasks"]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tasks Due Today -->
+    @if (tasksDueToday.Any())
+    {
+        <div class="urgent-section">
+            <h2>🔥 Tasks Due Today</h2>
+            <div class="task-list">
+                @foreach (var task in tasksDueToday)
+                {
+                    <div class="task-item urgent">
+                        <div class="task-info">
+                            <h4>@task.TaskName</h4>
+                            <div class="task-details">
+                                <span>💬 Comment: @task.Comment</span>
+                                <span>📁 Category: @task.Category</span>
+                                <span>👨‍💼 Assigned by: @task.AssignedBy</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Upcoming Tasks (Next 3 Days) -->
+    @if (upcomingTasks.Any())
+    {
+        <div class="upcoming-section">
+            <h2>📅 Next 3 Days</h2>
+            <div class="tasks-cards">
+                @foreach (var task in upcomingTasks)
+                {
+                    <div class="task-card @GetCardClass(task)">
+                        <div class="task-card-header">
+                            <span class="days-badge-small @GetDaysBadgeClass(task.DaysUntilDue)">
+                                @task.DaysUntilDue @(task.DaysUntilDue == 1 ? "day" : "days")
+                            </span>
+                        </div>
+
+                        <h3 class="task-title">@task.TaskName</h3>
+
+                        <div class="task-meta">
+                            <div class="meta-item">
+                                <span class="meta-icon">💬</span>
+                                <span class="meta-text">@(string.IsNullOrWhiteSpace(task.Comment) ? "No comment" : task.Comment)</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="meta-icon">📁</span>
+                                <span class="category-badge-small category-@task.Category.ToString().ToLower()">
+                                    @task.Category
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="task-footer">
+                            <div class="footer-item">
+                                <span class="footer-label">Due:</span>
+                                <span class="footer-value">@task.ExpectedDelivery.ToString("MMM dd")</span>
+                            </div>
+                            <div class="footer-item">
+                                <span class="footer-label">By:</span>
+                                <span class="footer-value">@task.AssignedBy</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- All Pending Tasks -->
+    <div class="all-tasks-section">
+        <h2>📋 All Pending Tasks</h2>
+        <div class="tasks-cards">
+            @foreach (var task in pendingTasks)
+            {
+                <div class="task-card @(task.IsOverdue ? "task-overdue" : "") @(task.IsDueToday ? "task-due-today" : "")">
+                    <div class="task-card-header">
+                        <div class="task-status-badge">
+                            @if (task.IsOverdue)
+                            {
+                                <span class="status-badge overdue">⚠️ Overdue</span>
+                            }
+                            else if (task.IsDueToday)
+                            {
+                                <span class="status-badge due-today">🔥 Today</span>
+                            }
+                            else
+                            {
+                                <span class="status-badge pending">⏳ Pending</span>
+                            }
+                        </div>
+                        <button class="btn-complete-small" @onclick="() => CompleteTask(task.Id)" title="Mark as Complete">
+                            ✓
+                        </button>
+                    </div>
+
+                    <h3 class="task-title">@task.TaskName</h3>
+
+                    <div class="task-meta">
+                        <div class="meta-item">
+                            <span class="meta-icon">💬</span>
+                            <span class="meta-text">@(string.IsNullOrWhiteSpace(task.Comment) ? "No comment" : task.Comment)</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-icon">📁</span>
+                            <span class="category-badge-small category-@task.Category.ToString().ToLower()">
+                                @task.Category
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="task-footer">
+                        <div class="footer-item">
+                            <span class="footer-label">Due:</span>
+                            <span class="footer-value">@task.ExpectedDelivery.ToString("MMM dd")</span>
+                        </div>
+                        <div class="footer-item">
+                            <span class="footer-label">By:</span>
+                            <span class="footer-value">@task.AssignedBy</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private Dictionary<string, int> statistics = new();
+    private List<TodoTask> pendingTasks = new();
+    private List<TodoTask> tasksDueToday = new();
+    private List<TodoTask> upcomingTasks = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        TaskService.OnTasksChanged += OnTasksChanged;
+        await RefreshDashboard();
+
+        // Schedule notifications in background
+        // These will fire even when app is closed!
+        try
+        {
+            await NotificationService.ScheduleAllTaskNotifications();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Notification error: {ex.Message}");
+        }
+    }
+
+    private void OnTasksChanged()
+    {
+        _ = RefreshDashboard();
+    }
+
+    private async Task RefreshDashboard()
+    {
+        try
+        {
+            statistics = TaskService.GetCategoryStatistics();
+            pendingTasks = TaskService.GetPendingTasks();
+            tasksDueToday = TaskService.GetTasksDueToday();
+            upcomingTasks = TaskService.GetTasksDueInNext3Days();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Refresh error: {ex.Message}");
+        }
+        await Task.CompletedTask;
+    }
+
+    private void CompleteTask(Guid taskId)
+    {
+        TaskService.ToggleTaskCompletion(taskId);
+    }
+
+    private void NavigateToAddTask()
+    {
+        NavigationManager.NavigateTo("/add-task");
+    }
+
+    private double GetPercentage(int value)
+    {
+        var total = statistics.ContainsKey("Total") ? statistics["Total"] : 0;
+        return total > 0 ? (double)value / total * 100 : 0;
+    }
+
+    private string GetRowClass(TodoTask task)
+    {
+        if (task.DaysUntilDue == 0) return "due-today-row";
+        if (task.DaysUntilDue == 1) return "due-tomorrow-row";
+        return "";
+    }
+
+    private string GetCardClass(TodoTask task)
+    {
+        if (task.DaysUntilDue == 0) return "task-due-today";
+        if (task.DaysUntilDue == 1) return "task-due-tomorrow";
+        return "";
+    }
+
+    private string GetDaysBadgeClass(int days)
+    {
+        if (days == 0) return "days-0";
+        if (days == 1) return "days-1";
+        return "days-2-3";
+    }
+
+    public void Dispose()
+    {
+        TaskService.OnTasksChanged -= OnTasksChanged;
+    }
+}

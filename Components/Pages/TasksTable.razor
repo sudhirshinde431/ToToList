@@ -1,0 +1,224 @@
+@page "/tasks-table"
+@using ToDoList.Models
+@using ToDoList.Services
+@inject TaskService TaskService
+
+<div class="tasks-table-container">
+    <div class="page-header">
+        <h1>📊 Tasks Table View</h1>
+        <div class="filter-buttons">
+            <button class="@GetFilterClass("all")" @onclick='() => SetFilter("all")'>
+                All (@allTasks.Count)
+            </button>
+            <button class="@GetFilterClass("pending")" @onclick='() => SetFilter("pending")'>
+                Pending (@pendingCount)
+            </button>
+            <button class="@GetFilterClass("completed")" @onclick='() => SetFilter("completed")'>
+                Completed (@completedCount)
+            </button>
+            <button class="@GetFilterClass("overdue")" @onclick='() => SetFilter("overdue")'>
+                Overdue (@overdueCount)
+            </button>
+        </div>
+    </div>
+
+    @if (filteredTasks.Any())
+    {
+        <div class="table-wrapper">
+            <table class="tasks-table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Task Name</th>
+                        <th>Comment</th>
+                        <th>Category</th>
+                        <th>Due Date</th>
+                        <th>Days</th>
+                        <th>Assigned By</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var task in filteredTasks)
+                    {
+                        <tr class="@GetRowClass(task)">
+                            <td>
+                                @if (task.IsCompleted)
+                                {
+                                    <span class="status-badge completed">✅ Done</span>
+                                }
+                                else if (task.IsOverdue)
+                                {
+                                    <span class="status-badge overdue">⚠️ Overdue</span>
+                                }
+                                else if (task.IsDueToday)
+                                {
+                                    <span class="status-badge due-today">🔥 Today</span>
+                                }
+                                else
+                                {
+                                    <span class="status-badge pending">⏳ Pending</span>
+                                }
+                            </td>
+                            <td class="task-name-col">@task.TaskName</td>
+                            <td class="comment-col">
+                                @if (string.IsNullOrWhiteSpace(task.Comment))
+                                {
+                                    <span class="no-comment">—</span>
+                                }
+                                else
+                                {
+                                    <span>@task.Comment</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="category-badge category-@task.Category.ToString().ToLower()">
+                                    @task.Category
+                                </span>
+                            </td>
+                            <td class="date-col">@task.ExpectedDelivery.ToString("MMM dd, yyyy")</td>
+                            <td class="days-col">
+                                @if (!task.IsCompleted)
+                                {
+                                    if (task.IsOverdue)
+                                    {
+                                        <span class="days-text overdue-text">-@Math.Abs(task.DaysUntilDue)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="days-text">@task.DaysUntilDue</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="completed-text">—</span>
+                                }
+                            </td>
+                            <td>@task.AssignedBy</td>
+                            <td class="date-col">@task.CreatedDate.ToString("MMM dd, yyyy")</td>
+                            <td class="actions-col">
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-toggle" 
+                                            @onclick="() => ToggleCompletion(task.Id)"
+                                            title="@(task.IsCompleted ? "Mark as Pending" : "Mark as Complete")">
+                                        @if (task.IsCompleted)
+                                        {
+                                            <span>↩️</span>
+                                        }
+                                        else
+                                        {
+                                            <span>✓</span>
+                                        }
+                                    </button>
+                                    <button class="btn-action btn-delete" 
+                                            @onclick="() => DeleteTask(task.Id)"
+                                            title="Delete Task">
+                                        🗑️
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-summary">
+            <p>Showing @filteredTasks.Count of @allTasks.Count tasks</p>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h3>No tasks found</h3>
+            <p>@GetEmptyMessage()</p>
+        </div>
+    }
+</div>
+
+@code {
+    private List<TodoTask> allTasks = new();
+    private List<TodoTask> filteredTasks = new();
+    private string currentFilter = "all";
+    private int pendingCount = 0;
+    private int completedCount = 0;
+    private int overdueCount = 0;
+
+    protected override void OnInitialized()
+    {
+        TaskService.OnTasksChanged += RefreshTasks;
+        RefreshTasks();
+    }
+
+    private void RefreshTasks()
+    {
+        allTasks = TaskService.GetAllTasks()
+            .OrderBy(t => t.IsCompleted)
+            .ThenBy(t => t.ExpectedDelivery)
+            .ToList();
+        
+        pendingCount = allTasks.Count(t => !t.IsCompleted);
+        completedCount = allTasks.Count(t => t.IsCompleted);
+        overdueCount = allTasks.Count(t => t.IsOverdue);
+        ApplyFilter();
+        StateHasChanged();
+    }
+
+    private void SetFilter(string filter)
+    {
+        currentFilter = filter;
+        ApplyFilter();
+    }
+
+    private void ApplyFilter()
+    {
+        filteredTasks = currentFilter switch
+        {
+            "pending" => allTasks.Where(t => !t.IsCompleted).ToList(),
+            "completed" => allTasks.Where(t => t.IsCompleted).ToList(),
+            "overdue" => allTasks.Where(t => t.IsOverdue).ToList(),
+            _ => allTasks
+        };
+    }
+
+    private string GetFilterClass(string filter)
+    {
+        return currentFilter == filter ? "filter-btn active" : "filter-btn";
+    }
+
+    private string GetRowClass(TodoTask task)
+    {
+        if (task.IsCompleted) return "row-completed";
+        if (task.IsOverdue) return "row-overdue";
+        if (task.IsDueToday) return "row-due-today";
+        return "";
+    }
+
+    private void ToggleCompletion(Guid taskId)
+    {
+        TaskService.ToggleTaskCompletion(taskId);
+    }
+
+    private void DeleteTask(Guid taskId)
+    {
+        TaskService.DeleteTask(taskId);
+    }
+
+    private string GetEmptyMessage()
+    {
+        return currentFilter switch
+        {
+            "pending" => "You don't have any pending tasks. Great job!",
+            "completed" => "No completed tasks yet. Start checking off some tasks!",
+            "overdue" => "No overdue tasks. You're on track!",
+            _ => "No tasks yet. Click 'Add Task' to create your first task."
+        };
+    }
+
+    public void Dispose()
+    {
+        TaskService.OnTasksChanged -= RefreshTasks;
+    }
+}

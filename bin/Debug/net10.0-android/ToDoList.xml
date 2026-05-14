@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ToDoList</name>
+    </assembly>
+    <members>
+        <member name="M:ToDoList.Services.NotificationService.ScheduleAllTaskNotifications">
+            <summary>
+            Schedules notifications for all upcoming tasks
+            This runs in the background and sends notifications even when app is closed
+            </summary>
+        </member>
+        <member name="M:ToDoList.Services.NotificationService.ScheduleTaskNotifications(ToDoList.Models.TodoTask)">
+            <summary>
+            Schedules multiple notifications for a single task:
+            - 3 days before due date
+            - 1 day before due date
+            - On due date (morning)
+            - On due date (if still pending)
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:ToDoList.Services.NotificationService.ScheduleNotification(System.Int32,System.String,System.String,System.DateTime)" -->
+        <!-- Badly formed XML comment ignored for member "M:ToDoList.Services.NotificationService.ShowImmediateNotification(System.String,System.String)" -->
+        <!-- Badly formed XML comment ignored for member "M:ToDoList.Services.NotificationService.RequestPermissions" -->
+        <member name="M:ToDoList.Services.NotificationService.CheckAndScheduleNotifications">
+            <summary>
+            Old method - kept for backward compatibility
+            Now just calls ScheduleAllTaskNotifications
+            </summary>
+        </member>
+        <member name="T:ToDoList.Resource">
+            <summary>
+            Android Resource Designer class.
+            Exposes the Android Resource designer assembly into the project Namespace.
+            </summary>
+        </member>
+    </members>
+</doc>
