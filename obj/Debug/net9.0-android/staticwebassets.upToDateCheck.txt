@@ -1,0 +1,8 @@
+wwwroot\app.css
+wwwroot\index.html
+wwwroot\lib\bootstrap\dist\css\bootstrap.min.css
+wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map
+C:\Users\dt226537\source\repos\ToDoList\ToDoList\wwwroot\app.css
+C:\Users\dt226537\source\repos\ToDoList\ToDoList\wwwroot\index.html
+C:\Users\dt226537\source\repos\ToDoList\ToDoList\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css
+C:\Users\dt226537\source\repos\ToDoList\ToDoList\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map

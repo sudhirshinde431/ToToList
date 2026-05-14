@@ -1,0 +1,227 @@
+.all-tasks-container[b-ek183025az] {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header[b-ek183025az] {
+    margin-bottom: 30px;
+}
+
+.page-header h1[b-ek183025az] {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0 0 20px 0;
+}
+
+.filter-buttons[b-ek183025az] {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-btn[b-ek183025az] {
+    padding: 10px 20px;
+    border: 2px solid #e2e8f0;
+    background: white;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-btn:hover[b-ek183025az] {
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.filter-btn.active[b-ek183025az] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: transparent;
+}
+
+.tasks-grid[b-ek183025az] {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.task-card[b-ek183025az] {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    border-left: 4px solid #667eea;
+    transition: all 0.2s;
+}
+
+.task-card:hover[b-ek183025az] {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+}
+
+.task-card.completed[b-ek183025az] {
+    opacity: 0.7;
+    border-left-color: #10b981;
+}
+
+.task-card.overdue[b-ek183025az] {
+    border-left-color: #ef4444;
+    background: #fef2f2;
+}
+
+.task-card-header[b-ek183025az] {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.task-card-header h3[b-ek183025az] {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.task-actions[b-ek183025az] {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-icon[b-ek183025az] {
+    padding: 6px 10px;
+    border: none;
+    background: #f1f5f9;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+}
+
+.btn-icon:hover[b-ek183025az] {
+    background: #e2e8f0;
+    transform: scale(1.1);
+}
+
+.btn-icon.delete:hover[b-ek183025az] {
+    background: #fee2e2;
+}
+
+.task-card-body[b-ek183025az] {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.task-detail[b-ek183025az] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+}
+
+.task-detail .icon[b-ek183025az] {
+    font-size: 1.1rem;
+}
+
+.task-detail .label[b-ek183025az] {
+    font-weight: 600;
+    color: #64748b;
+    min-width: 100px;
+}
+
+.task-detail .value[b-ek183025az] {
+    color: #1e293b;
+}
+
+.category-badge[b-ek183025az] {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.category-pd[b-ek183025az] {
+    background-color: #ddd6fe;
+    color: #6d28d9;
+}
+
+.category-ps[b-ek183025az] {
+    background-color: #fce7f3;
+    color: #be185d;
+}
+
+.category-personal[b-ek183025az] {
+    background-color: #bfdbfe;
+    color: #1e40af;
+}
+
+.status-badge[b-ek183025az] {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-badge.overdue[b-ek183025az] {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.status-badge.due-today[b-ek183025az] {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.status-badge.pending[b-ek183025az] {
+    background-color: #dbeafe;
+    color: #2563eb;
+}
+
+.empty-state[b-ek183025az] {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+.empty-icon[b-ek183025az] {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.empty-state h3[b-ek183025az] {
+    font-size: 1.5rem;
+    color: #1e293b;
+    margin: 0 0 12px 0;
+}
+
+.empty-state p[b-ek183025az] {
+    color: #64748b;
+    font-size: 1rem;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .tasks-grid[b-ek183025az] {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-buttons[b-ek183025az] {
+        flex-direction: column;
+    }
+
+    .filter-btn[b-ek183025az] {
+        width: 100%;
+    }
+}

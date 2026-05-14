@@ -1,0 +1,53 @@
+name: Build iOS IPA for iPhone
+
+on:
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+  push:
+    branches: [ main ]
+
+jobs:
+  build-ios:
+    name: Build iOS App
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET 9
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Install .NET MAUI workload
+      run: |
+        dotnet workload install maui --skip-manifest-update
+
+    - name: Restore NuGet packages
+      run: dotnet restore ToDoList.csproj
+
+    - name: Build iOS app (unsigned for testing)
+      run: |
+        dotnet build ToDoList.csproj -f net9.0-ios -c Release
+
+    - name: Publish iOS IPA
+      run: |
+        dotnet publish ToDoList.csproj -f net9.0-ios -c Release /p:ArchiveOnBuild=true /p:RuntimeIdentifier=ios-arm64
+
+    - name: Find and rename IPA
+      run: |
+        find bin/Release/net9.0-ios -name "*.ipa" -exec cp {} MyWork-iOS-v1.0.ipa \;
+
+    - name: Upload IPA artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: MyWork-iOS-IPA
+        path: MyWork-iOS-v1.0.ipa
+        if-no-files-found: error
+
+    - name: Upload build folder (for debugging)
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-build-output
+        path: bin/Release/net9.0-ios/
